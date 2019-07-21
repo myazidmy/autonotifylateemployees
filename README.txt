@@ -1,3 +1,5 @@
+View the Google Sheet: https://docs.google.com/spreadsheets/d/1YcVsp9CTg0Kce0gE2rV8YO4UJdFXpTRLaXWqt5vLUm0/edit?usp=sharing
+
 What do we have right now?
 Script that can:
 Send email if someone is late by 15mins
