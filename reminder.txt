@@ -1,0 +1,58 @@
+// this is to remind people to check in 
+
+function reminderSender() {
+  
+  // define a couple constants for the function
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const ui = SpreadsheetApp.getUi();
+  
+  // getting the range for the row to that will be sent out
+  var rowRange = sheet.getRange(1, 1, 80, 10).getValues();
+  var lastRow = sheet.getLastRow();
+  
+  for (var i = 1; i < lastRow; i++){//start of for loop
+    
+    var name = rowRange[i][0];
+    var working = rowRange[i][1]; // checks working or not
+    var timeIn = rowRange[i][2]; // checks Time In
+    var timeOut = rowRange[i][3]; // checks Time Out
+    var goingIn = rowRange[i][4]; // checks going In break
+    var comingBack = rowRange[i][5]; // checks going out break
+    var today = Utilities.formatDate(new Date(), "GMT+8", "dd/MMMM/yyyy")
+    var forgot = sheet.getRange(i+1, 11).getValue();
+        
+    // for some reason Google Scripts deducts 5mins and 42 seconds from all time values
+    // in this case we can set the Schedule to be 20mins ahead, to take account for this 5min
+    
+    var send = "false";
+    var details1 = "", details2 = "", details3 = "", details4 = "";
+    
+    if (timeIn == "") {details1 = "<ul> Time In of Work </ul>";}
+    if (timeOut == "") {details2 = "<ul> Time Out of Work </ul>";}
+    if (goingIn == "") {details3 = "<ul> Time In for Break </ul>";}
+    if (comingBack == "") {details4 = "<ul> Time Out for break </ul>";}
+    
+    if (working != "L" && working != "SL" && working != "V"){
+        if (timeIn == "" || timeOut == "" || goingIn == "" || comingBack == ""){
+          
+          var body = "<p>Hi there!" + name + "</p>"
+          + "<p>It has come to our attention that you did not submit the time tracker form on <strong>" + today + " </strong>"
+          + "for the following details: </p>"
+          + details1 + details2 + details3 + details4
+          + "<p> We would like to remind you that consective missing submissions "
+          + "may result in a warning and be marked as insufficient working hours. "
+          + "Kindly submit the time tracker form. We expect you to" 
+          + "complete the submissions daily and show immediate progress. </p>"
+          + "<p> Regards<br>Boss"
+                    
+          //ui.alert(name + " is late to work by " + late + " minutes" + body); check if it works
+          
+          //MailApp.sendEmail("puttestemailhere@gmail", "HEY WHY YOU FORGET", '',{'htmlBody' : body});
+        
+          forgot++;
+          sheet.getRange(i+1, 11).setValue(forgot);
+        }
+      }
+    }//end for for loop
+  
+  }

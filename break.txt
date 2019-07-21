@@ -1,0 +1,57 @@
+//this is to warn people when they have taken too long of a break 
+
+function breakSender() {
+  
+  // define a couple constants for the function
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const ui = SpreadsheetApp.getUi();
+  
+  // getting the range for the row to that will be sent out
+  var rowRange = sheet.getRange(1, 1, 80, 10).getValues();
+  var lastRow = sheet.getLastRow();
+  
+  for (var i = 1; i < lastRow; i++){ //start of for loop
+    
+    var name = rowRange[i][0];
+    var working = rowRange[i][1]; // checks working or not
+    var goingOut = rowRange[i][4]; // checks goingout
+    var comingBack = rowRange[i][5]; // checks coming back break
+    var breakDuration = rowRange[i][7]; // checks how long break
+    var today = Utilities.formatDate(new Date(), "GMT+8", "dd/MMMM/yyyy")
+    var longBreakCounter = sheet.getRange(i+1, 12).getValue();
+    
+    
+    var maxDuration = new Date('Dec 30 1899 00:00:00');
+    const max = 4680000;
+    var timeOut = breakDuration - maxDuration;
+    //ui.alert(timeOut + " " + working);
+    
+    // for some reason Google Scripts deducts 5mins and 42 seconds from all time values
+    
+    if (goingOut != "" && comingBack != ""){ //for some reason doesnt work if its below    
+      if (working != "L" && working != "SL" && working != "V"){
+        if (timeOut > max){ // 4680000ms = 1h 18 mins
+                    
+          var body = "<p>Hi there! " + name + "</p>"
+          + "<p>It has come to our attention that you exceeded your break time on <strong>" + today + "</strong>."
+          + "We would like to remind you to adhere to the break time of one hour"
+          + "for either lunch or dinner breaks."
+          + "<p> Kindly replace any time missed. We expect you to"
+          + "adjust your break time as per your duty timings and show immediate progress.</p>"
+          + "<p> Regards </p><br>Boss"
+          
+          //ui.alert(name + " took a really long break: ");
+          
+          //MailApp.sendEmail("puttestemailhere@gmail", "HEY WHY YOU FORGET", '',{'htmlBody' : body});
+        
+          longBreakCounter++;
+          sheet.getRange(i+1, 12).setValue(longBreakCounter);
+        }
+      }
+    }
+  
+  }//end for for loop
+
+  
+  }
+  

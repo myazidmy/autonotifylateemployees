@@ -1,0 +1,52 @@
+// set trigger for this at 5pm - 6pm?
+
+function lateSender() {
+  
+  // define a couple constants for the function
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const ui = SpreadsheetApp.getUi();
+  
+  // getting the range for the row to that will be sent out
+  var rowRange = sheet.getRange(1, 1, 80, 11).getValues();
+  var lastRow = sheet.getLastRow();
+  
+  for (var i = 1; i < lastRow; i++){//start of for loop
+    
+    var name = rowRange[i][0];
+    var working = rowRange[i][1]; // checks working or not
+    var timeIn = rowRange[i][2]; // checks Time In
+    var schedule = rowRange[i][8]; //checks Schedule
+    var today = Utilities.formatDate(new Date(), "GMT+8", "dd/MMMM/yyyy")
+    var repeatOffender = sheet.getRange(i+1, 10).getValue();
+    
+    var late = (timeIn - schedule)/60000; // we can also track how long was this person late by
+    
+    // for some reason Google Scripts deducts 5mins and 42 seconds from all time values
+    // in this case we can set the Schedule to be 20mins ahead, to take account for this 5min
+    
+    if (timeIn != ""){ //for some reason doesnt work if its below    
+      if (working != "L" && working != "SL" && working != "V"){
+        if (timeIn > schedule){
+    
+          var body = "<p>Hi there!</p>"
+          + "<p>It has come to our attention that you were late on <strong>" + today + "</strong>."
+          + "We would like to inform you that this behavior"
+          + "is considered a misconduct and is strictly against company policies."
+          + "<p> Kindly replace any time missed. We expect you to"
+          + "adjust your attendance as per your duty timings and show immediate progress.</p>"
+          + "<p> Regards </p><br>Boss"
+          
+          
+          // ui.alert(name + " is late to work by " + late + " minutes");
+          
+          //MailApp.sendEmail("puttestemailhere@gmail", "HEY WHY YOU FORGET", '',{'htmlBody' : body});
+        
+          repeatOffender++;
+          sheet.getRange(i+1, 10).setValue(repeatOffender);
+        }
+      }
+    }
+  
+  }//end for for loop
+  
+}
